@@ -1,5 +1,5 @@
 import express from "express"
-import { addFood, listFood } from "../controllers/foodController.js"
+import { addFood, listFood, removeFood } from "../controllers/foodController.js"
 import multer from "multer"
 
 const foodRouter = express.Router();
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage:storage}); //Menggunakan konfigurasi storage yang sudah ditentukan
 
 foodRouter.post("/add", upload.single("image"), addFood)    //upload.single("image") adalah middleware yang akan menangani upload file, 
-                                                            // Setelah file berhasil di-upload, fungsi addFood akan dipanggil untuk menangani sisa proses (misalnya menyimpan data makanan dan informasi file dalam database
 foodRouter.get("/list", listFood )
+foodRouter.post("/remove", removeFood)
 
 export default foodRouter;

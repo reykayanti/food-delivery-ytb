@@ -5,14 +5,6 @@ import fs from "fs"; //nakan untuk berinteraksi dengan sistem file, seperti memb
 // add food item
 const addFood = async (req, res) => { // add data to database
 
-
-    if(!req.file){ // if no file uploaded
-        res.json({
-            success:false, message:"No File Uploaded"
-        }) 
-        return;
-    }
-
     // save file name that uploaded to variable 'image_filename'
     let image_filename = `${req.file.filename}`; 
 
@@ -53,5 +45,25 @@ const listFood = async(req, res) => {
     }
 }
 
+// remove food item
 
-export {addFood, listFood}
+const removeFood = async(req, res) => {
+    try{
+        const food = await foodModel.findById(req.body.id);
+        fs.unlink(`uploads/${food.image}`, ()=> {})
+
+        await foodModel.findByIdAndDelete(req.body.id)
+        res.json({
+            success: true,
+            message: "Food Removed"
+        })
+    } catch(error){
+        console.log(error);
+        res.json({
+            success: false,
+            message: "Error"
+        })
+    }
+}
+
+export {addFood, listFood, removeFood}
