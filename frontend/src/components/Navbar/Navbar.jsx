@@ -1,14 +1,21 @@
 import React, { useContext, useState } from 'react'
 import './Navbar.css'
 import { assets } from '../../assets/assets'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { StoreContext } from '../../context/StoreContext'
 
 const Navbar = ({setShowLogin}) => {
 
     const [menu, setMenu] = useState("home");
+    const {getTotalCartAmount, token, setToken} = useContext(StoreContext);
 
-    const {getTotalCartAmount} = useContext(StoreContext);
+    const navigate = useNavigate();
+
+    const logout = () => {
+        localStorage.removeItem("token") //// Menghapus token yang tersimpan di localStorage untuk mengakhiri sesi pengguna
+        setToken(""); // Mengatur state 'token' menjadi string kosong 
+        navigate("/") //kembali ke halaman utama
+    }
 
   return (
     <div className='navbar'>
@@ -29,7 +36,19 @@ const Navbar = ({setShowLogin}) => {
                                 }>
                 </div>
             </div>
-            <button onClick={()=>setShowLogin(true)}>Sign In</button>
+            {!token //jika tidak ada token
+                ?<button onClick={()=>setShowLogin(true)}>Sign In</button> //true : maka show sign in
+                : // else : tampilkan fitur orders dan logout
+                    <div className='navbar-profile'> 
+                    <img src={assets.profile_icon} alt="" />
+                    <ul className="nav-profile-dropdown">
+                        <li><img src={assets.bag_icon} alt="" /><p>Orders</p></li>
+                        <hr />
+                        <li onClick={logout}><img src={assets.logout_icon} alt="" /><p>Logout</p></li>
+                    </ul>
+                    </div>  
+            }
+            
         </div>
     </div>
   )
