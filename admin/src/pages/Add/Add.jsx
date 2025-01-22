@@ -5,9 +5,8 @@ import axios from "axios"
 import { toast } from 'react-toastify'
 
 
-export const Add = () => {
+export const Add = ({url}) => {
 
-  const url = "http://localhost:4000";
   const [image, setImage] = useState(false);
   const [data, setData] = useState({
     name:"",
@@ -53,7 +52,7 @@ export const Add = () => {
       setImage(false)
       toast.success(response.data.message)
     } else {
-
+      toast.error(response.data.message)
     }
   }
 
