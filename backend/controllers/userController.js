@@ -7,6 +7,29 @@ import express from "express";
 //login user
 const loginUser = async (req, res) => {
 
+    const {email, password} = req.body;
+
+    try {
+        //check user already exists
+        const user = await userModel.findOne({email})
+
+        if (!user) {
+            return res.json({success:false, message:"User doesn't exists"})
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password)
+
+        if (!isMatch) {
+            return res.json({success:false, message:"Invalid credentials"})
+        }
+
+        const token = createToken(user._id)
+        res.json({success:true, token:token})
+        
+    } catch (error) {
+        console.log(error)
+            res.json({success:false, message:"Error"})
+    }
 }
 
 
