@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { food_list } from "../assets/assets";
+import axios from 'axios';
 
 export const StoreContext = createContext(null)
 
@@ -8,6 +8,7 @@ const StoreContextProvider = (props) => {
     const [cartItems, setCartItems] = useState({});
     const url = "http://localhost:4000"
     const [token, setToken] = useState("")
+    const [food_list, setfoodList] = useState([])
 
     const addToCart = (itemId) =>  {
         if(!cartItems[itemId]) {
@@ -35,8 +36,24 @@ const StoreContextProvider = (props) => {
     }
 
     // useEffect(()=> {
-    //     console.log(cartItems);
-    // }, [cartItems])
+    //     console.log(cartItems); // Menampilkan nilai terbaru 
+    // }, [cartItems]) // // Efek ini hanya akan dijalankan jika cartItems berubah
+
+    const fetchFoodList =  async () => {
+        const response = await axios.get(url + "/api/food/list")
+        setfoodList(response.data.data)
+    }
+
+
+    useEffect(()=>{
+        async function loadData() { // Mendeklarasikan fungsi async untuk memuat data
+            await fetchFoodList(); // Menunggu hasil dari pemanggilan fetchFoodLis
+            if (localStorage.getItem("token")) {  // Memeriksa apakah ada "token" yang tersimpan di localStorage
+                setToken(localStorage.getItem("token"))  // Jika ada, set nilai token ke state setToken
+            }
+        }
+        loadData(); //memanggil fungsi loadData
+    },[]) // Efek ini hanya dijalankan sekali, saat komponen pertama kali di-render
 
     const contextValue = {
         food_list,
