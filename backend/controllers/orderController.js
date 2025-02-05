@@ -65,4 +65,20 @@ const placeOrder = async (req, res) => {
     }
 }
 
-export {placeOrder};
+const verifyOrder = async (req, res) => {
+    const {orderId, success} = req.body; // Mengambil orderId dan status success dari body permintaan
+    try {
+        if (success==="true") { // Memeriksa apakah status pembayaran adalah "true"
+            await orderModel.findByIdAndUpdate(orderId, {payment:true}) // Memperbarui status pembayaran menjadi true
+            res.json({success:true, message:"Paid"}) // Mengirimkan respons sukses
+        } else {
+            await orderModel.findByIdAndDelete(orderId) // Menghapus order jika pembayaran tidak berhasil
+            res.json({success:false, message:"Not Paid"}) // Mengirimkan respons gagal
+        }
+    } catch (error) {
+        console.log(error); // Mencetak kesalahan ke konsol
+        res.json({success:false, message:"Error"}); // Mengirimkan respons kesalahan
+    }
+}
+
+export {placeOrder, verifyOrder};
